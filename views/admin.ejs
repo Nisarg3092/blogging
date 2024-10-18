@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head') %>
+        <title>Blogger Admin</title>
+        <style>
+            .user-imge {
+                max-width: 4rem;
+                max-height: 5rem;
+            }
+
+            .table{
+                --bs-table-color: #f6f6f6;
+                --bs-table-bg:transparent;
+                vertical-align: middle;
+            }
+
+            .table-hover{
+                  --bs-table-hover-color:  #f6f6f6;
+                  --bs-table-hover-bg: #a3c8d92d;
+            }
+
+           
+        </style>
+</head>
+
+<body>
+    <nav class="navbar bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <% if (locals.users) { %>
+        <table class="table table-hover mt-5">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User Image</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>User Access</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach((users,position)=> { %>
+                    <tr>
+                        <th scope="row">
+                            <%= position + 1 %>
+                        </th>
+                        <td><a href="/admin/user/<%= users._id %>"><img class="user-imge"
+                                    src="<%= users.profileImage %>"></a></td>
+                        <td><a href="/admin/user/<%= users._id %>">
+                                <%= users.fullname %>
+                            </a></td>
+                        <td><a href="/admin/user/<%= users._id %>">
+                                <%= users.email %>
+                            </a></td>
+                        <td><button class="btn <% if (users.role === "USER") { %>
+                                btn-primary
+                                <% } else { %> btn-dark <% } %>" id="role<%= position + 1 %>"
+                                            onclick="chnageRole('<%= users._id %>','<%= position +1 %>')">
+                                                    <%= users.role %>
+                            </button></td>
+                        <td><button class="btn <% if (users.access === true) { %>
+                            btn-success
+                            <% } else { %> btn-secondary <% } %> " id="access<%= position + 1 %>"
+                                onclick="chnageAccess('<%= users._id %>','<%= position +1 %>')">
+                                <% if (users.access===true) { %>
+                                    Enable
+                                    <% } else { %> Disable <% } %>
+                            </button></td>
+                    </tr>
+                    <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+            No User Found
+            <% } %>
+
+                <script>
+
+                    function chnageAccess(id, i) {
+                        let access = document.getElementById(`access${i}`);
+                        console.log(access.innerText)
+                        if (access.innerText === "Enable") {
+                            access.classList.remove("btn-success");
+                            access.classList.add("btn-secondary");
+                            changeAccessCall(id, false)
+                            access.innerText = "Disable"
+                        } else {
+                            access.classList.remove("btn-secondary");
+                            access.classList.add("btn-success");
+                            changeAccessCall(id, true)
+                            access.innerText = "Enable"
+                        }
+                    }
+
+                    function changeAccessCall(id, access) {
+                        console.log(id, access);
+                        fetch('/admin/chnageaccess', {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ id: id, access: access })
+                        })
+                        .catch((err) => {
+                                console.log(err);
+                            })
+                    }
+
+                    function chnageRole(id, i) {
+                        let role = document.getElementById(`role${i}`);
+                        console.log(role.innerText)
+                        if (role.innerText === "USER") {
+                            role.classList.remove("btn-primary");
+                            role.classList.add("btn-dark");
+                            changeRoleCall(id, "ADMIN")
+                            role.innerText = "ADMIN"
+                        } else {
+                            role.classList.remove("btn-dark");
+                            role.classList.add("btn-primary");
+                            changeRoleCall(id, "USER")
+                            role.innerText = "USER"
+                        }
+                    }
+
+
+                    function changeRoleCall(id, role) {
+                        console.log(id, role);
+                        fetch('/admin/chnagerole', {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ id: id, role: role })
+                        })
+                        .catch((err) => {
+                                console.log(err);
+                            })
+                    }
+                </script>
+
+                <%- include('./partials/script') %>
+
+</body>
+
+</html>

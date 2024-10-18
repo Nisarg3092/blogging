@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Blogger Sign Up</title>
+    <style>
+      .input-filed{
+        width: 25rem;
+      }
+    </style>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+    <div class=" container mt-5 bg-dark col-md-4 rounded p-2">
+    <form action="/signup" method="post">
+    <div class="d-flex flex-column align-items-center">
+            <div class="mb-3 mt-5">
+              <label for="fullname" class="form-label">Username</label>
+              <input type="text" class="form-control input-filed" id="fullname" name="fullname" aria-describedby="fullname" placeholder="Enter Username">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control input-filed" id="email" name="email" aria-describedby="email" placeholder="Enter Email">
+              </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control input-filed" id="password" name="password" placeholder="Enter Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+        </div>
+    <%- include('./partials/script') %>
+</body>
+</html>

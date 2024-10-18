@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Blogger Sign In</title>
+    <style>
+      a{
+        color:  #f6f6f65d;
+      }
+      .input-filed{
+        width: 25rem;
+      }
+    </style>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class=" container mt-5 bg-dark col-md-4 rounded">
+    <form action="/signin" method="post">
+    <div class="d-flex flex-column align-items-center">
+            <div class="mb-3 mt-5">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control input-filed" id="email" name="email" aria-describedby="email" placeholder="Enter Email">
+              </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control input-filed" id="password" name="password" placeholder="Enter Password">
+              <p class="float-end"><a href="/profile/forgotpassword">Forgot Password?</a></p>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+
+        </form>
+      </div>
+    <%- include('./partials/script') %>
+</body>
+</html>

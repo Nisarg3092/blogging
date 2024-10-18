@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head') %>
+        <title>Blogger Admin</title>
+        <style>
+            .user-imge {
+                max-width: 10rem;
+                max-height: 10rem;
+            }
+
+            .card-display {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .user-card {
+                border: 2px solid #d2e5ed;
+                padding: 2rem;
+                border-radius: 2rem;
+            }
+
+            .table{
+                --bs-table-color: #f6f6f6;
+                --bs-table-bg:transparent;
+                vertical-align: middle;
+            }
+
+            .table-hover{
+                  --bs-table-hover-color:  #f6f6f6;
+                  --bs-table-hover-bg: #a3c8d92d;
+            }
+
+            .card-img {
+                max-width: 18rem;
+                max-height: 15rem;
+                overflow: hidden;
+            }
+
+            .image {
+                max-width: 95%;
+            }
+
+            .card-data {
+                width: 50rem;
+            }
+
+            .heading {
+                width: 8rem;
+            }
+
+            .limit-body{
+                max-height: 10rem;
+                overflow-y: scroll;
+            }
+        </style>
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary bg-dark bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <% if (locals.users) { %>
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-2">
+                       <img class="user-imge" src="/<%= users.profileImage %>"
+                                alt="Profile Image" />
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row ">
+                            <div class="col-md-1 text-end p-0">
+                                Name:
+                            </div>
+                            <div class="col-md-3">
+                                
+                                    <%= users.fullname %>
+                               
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-1 text-end p-0">
+                            email:
+                            </div>
+                            <div class="col-md-2">
+                                
+                                    <%= users.email %>
+                              
+                            </div>
+                        </div>
+                        <hr>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <% } %>
+
+                <% if (locals.blogs.length> 0) { %>
+                    <div class="container mt-5">
+                        <% blogs.forEach(blogs=> {%>
+                            <div class="user-card mb-5 card-display">
+                                <div class="card-imgs">
+                                    <div class="card-img">
+                                        <img src="/<%= blogs.coverImage %>" class="image" alt="...">
+                                    </div>
+                                </div>
+                                <div class="card-data">
+
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <td class="heading">
+                                                Title:
+                                            </td>
+                                            <td>
+                                                <%= blogs.title %>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="heading">Body:</td>
+                                            <td>
+                                                <div class="limit-body">
+                                                    <%- blogs.body %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% if (blogs.draft) { %>
+                                            <tr>
+                                                <td colspan="2">
+
+                                                    It' a draft blog.
+
+                                                </td>
+                                            </tr>
+                                            </table>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <% if (blogs.flag) { %>
+                                                            <span class="text-success fw-bold py-2"> Published</span>
+                                                            <% } else { %>
+                                                                <span class="text-light fw-bold py-2">Not
+                                                                    Published</span>
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+                                                
+                                    </table>
+                                    <button type="submit" class="btn btn-primary"
+                                        onclick="hide('<%= blogs._id %>','<%= !blogs.flag %>')">Hide</button>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <% }) %>
+                    </div>
+                    <% } else { %>
+                        <div class="container mt-3">
+                            <span class="fs-5">User Have No Blogs!</span>
+                        </div>
+                        <% } %>
+    </div>
+
+    <script>
+        function hide(id,flag) {
+            fetch(`/admin/user/${id}`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({flag: flag})
+            })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    </script>
+
+    <%- include('./partials/script') %>
+</body>
+
+</html>

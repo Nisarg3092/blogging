@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<%- include('./partials/head') %>
+		<%- include('./partials/userBlogsCss') %>
+			<title>Draft Blogs</title>
+</head>
+
+<body>
+	<%- include('./partials/nav') %>
+
+		<% if (locals.blogs.length> 0) { %>
+			<div class="container mt-5">
+				<% blogs.forEach((blogs,i)=> {
+					if (blogs.draft === true) { %>
+					<form method="post" action="/user/draft-blog" id="updateForm<%= i %>" enctype="multipart/form-data">
+						<div class="user-card mt-3 card-display">
+							<div class="card-imgs">
+								<div class="card-img">
+									<img src="/<%= blogs.coverImage %>" class="image" alt="...">
+								</div>
+
+								<div class="mb-3">
+									<label for="CoverImage" class="form-label ">Chane Image</label>
+									<input class="form-control form-control-sm file-input" style="width: 85%;"
+										type="file" id="CoverImage" name="CoverImage">
+								</div>
+							</div>
+							<div class="card-data">
+								<input type="hidden" id="blogId" name="blogId" value="<%= blogs._id %>">
+								<div class="mb-3">
+									<label for="title" class="form-label">Title</label>
+									<input type="text" class="form-control input-filed" id="title" name="title"
+										aria-describedby="title" value="<%= blogs.title %>" required>
+								</div>
+								<div class="mb-3">
+									<label for="body" class="form-label">Body</label>
+									<div class="body-design rounded">
+										<div id="editor<%= i %>" contenteditable="true" class="body-input"><%-
+												blogs.body %></div>
+										<div class="text-edits">
+											<button type="button" data-cmd="justifyLeft"
+												class="bg-transparent border-0">
+												<i class="fa fa-align-left" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="justifyCenter"
+												class="bg-transparent border-0">
+												<i class="fa fa-align-center" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="justifyRight"
+												class="bg-transparent border-0">
+												<i class="fa fa-align-right" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="bold" class="bg-transparent border-0">
+												<i class="fa fa-bold" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="italic" class="bg-transparent border-0">
+												<i class="fa fa-italic" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="underline" class="bg-transparent border-0">
+												<i class="fa fa-underline" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="insertOrderedList"
+												class="bg-transparent border-0">
+												<i class="fa fa-list-ol" aria-hidden="true"></i>
+											</button>
+											<button type="button" data-cmd="insertUnorderedList"
+												class="bg-transparent border-0">
+												<i class="fa fa-list-ul" aria-hidden="true"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+								<button type="submit" class="btn btn-warning" name="action"
+									value="delete" onclick="submitForm('<%= i %>','delete')">Delete</button>
+								<button type="submit" class="btn btn-success" name="action"
+									value="publish" onclick="submitForm('<%= i %>','publish')">Publish</button>
+							</div>
+						</div>
+					</form>
+					<% } }) %>
+			</div>
+			<% } else { %>
+				<div class="container mt-3">
+					<span class="fs-5"> No Drafts!</span>
+				</div>
+				<% } %>
+
+					<script>
+
+						function submitForm(index,action) {
+							const form = document.getElementById(`updateForm${index}`);
+							const formData = new FormData(form);
+
+							const editorContent = document.getElementById(`editor${index}`).innerHTML;
+							formData.append('body', editorContent);
+							formData.append('action', action);
+
+							fetch('/user/update-blog', {
+								method: 'POST',
+								body: formData
+							})
+								.then(response => response.json())
+								.then(data => {
+									console.log('Success:', data);
+									window.location.reload();
+								})
+								.catch((error) => {
+									console.error('Error:', error);
+								});
+						}
+
+						document.querySelectorAll('.text-edits button').forEach(button => {
+							button.addEventListener('click', function () {
+								const cmd = this.getAttribute("data-cmd");
+								const editor = this.closest('.body-design').querySelector('[contenteditable="true"]');
+								document.execCommand(cmd, false, null);
+								editor.focus();
+							});
+						});
+					</script>
+
+					<%- include('./partials/script') %>
+</body>
+
+</html>

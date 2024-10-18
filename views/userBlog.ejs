@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<%- include('./partials/head') %>
+		<%- include('./partials/userBlogsCss') %>
+			<title>User Blogs</title>
+</head>
+
+<body>
+	<%- include('./partials/nav') %>
+
+		<% if (locals.blogs.length> 0) { %>
+			<div class="container mt-5">
+				<% blogs.forEach((blog, i)=> { %>
+					<% if (blog.draft===false) { %>
+						<form id="updateForm<%= i %>" enctype="multipart/form-data">
+							<div class="user-card mt-5 card-display">
+								<div class="card-imgs">
+									<div class="card-img">
+										<img src="/<%= blog.coverImage %>" class="image" alt="Cover Image">
+									</div>
+									<div class="mb-3">
+										<label for="CoverImage" class="form-label">Change Image</label>
+										<input class="form-control form-control-sm file-input" style="width: 85%;"
+											type="file" id="CoverImage" name="CoverImage">
+									</div>
+								</div>
+								<div class="card-data">
+									<input type="hidden" id="blogId" name="blogId" value="<%= blog._id %>">
+									<div class="mb-3">
+										<label for="title" class="form-label">Title</label>
+										<input type="text" class="form-control file-input" id="title" name="title"
+											aria-describedby="title" value="<%= blog.title %>" required>
+									</div>
+									<div class="mb-3">
+										<label for="body" class="form-label">Body</label>
+										<div class="body-design rounded">
+											<div id="editor<%= i %>" contenteditable="true" class="body-input"><%-
+													blog.body %></div>
+											<div class="text-edits">
+												<button type="button" data-cmd="justifyLeft"
+													class="bg-transparent border-0">
+													<i class="fa fa-align-left" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="justifyCenter"
+													class="bg-transparent border-0">
+													<i class="fa fa-align-center" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="justifyRight"
+													class="bg-transparent border-0">
+													<i class="fa fa-align-right" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="bold" class="bg-transparent border-0">
+													<i class="fa fa-bold" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="italic" class="bg-transparent border-0">
+													<i class="fa fa-italic" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="underline"
+													class="bg-transparent border-0">
+													<i class="fa fa-underline" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="insertOrderedList"
+													class="bg-transparent border-0">
+													<i class="fa fa-list-ol" aria-hidden="true"></i>
+												</button>
+												<button type="button" data-cmd="insertUnorderedList"
+													class="bg-transparent border-0">
+													<i class="fa fa-list-ul" aria-hidden="true"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+									<div class="mb-3">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" role="switch" id="flag"
+												name="flag" <% if (blog.flag===true) { %> checked <% } %>>
+												<label class="form-check-label" for="flag">Publish</label>
+										</div>
+									</div>
+									<button type="button" class="btn btn-primary"
+										onclick="submitForm('<%= i %>')">Update</button>
+								</div>
+							</div>
+						</form>
+						<% } %>
+							<% }) %>
+			</div>
+			<% } else { %>
+				<div class="container mt-3">
+					<span class="fs-5"> No Blogs! Create your first blog</span>
+					<a href="/user/add-blog"><button type="button" class="btn btn-primary">Create</button></a>
+				</div>
+				<% } %>
+
+					<script>
+
+						function submitForm(index) {
+							const form = document.getElementById(`updateForm${index}`);
+							const formData = new FormData(form);
+
+							const editorContent = document.getElementById(`editor${index}`).innerHTML;
+							formData.append('body', editorContent);
+
+							fetch('/user/update-blog', {
+								method: 'POST',
+								body: formData
+							})
+								.then(response => response.json())
+								.then(data => {
+									console.log('Success:', data);
+									window.location.reload();
+								})
+								.catch((error) => {
+									console.error('Error:', error);
+								});
+						}
+
+						document.querySelectorAll('.text-edits button').forEach(button => {
+							button.addEventListener('click', function () {
+								const cmd = this.getAttribute("data-cmd");
+								const editor = this.closest('.body-design').querySelector('[contenteditable="true"]');
+								document.execCommand(cmd, false, null);
+								editor.focus();
+							});
+						});
+					</script>
+
+					<%- include('./partials/script') %>
+</body>
+
+</html>

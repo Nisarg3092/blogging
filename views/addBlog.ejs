@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('./partials/head') %>
+    <title>Add New Blog</title>
+    <style>
+      .body-input {
+        width: 39.5rem;
+        height: 6rem;
+        background-color: transparent;
+        border: none;
+        color: #f6f6f6;
+        word-wrap: break-word;
+      white-space: pre-wrap;
+      overflow-wrap: break-word; 
+      box-sizing: border-box;
+      }
+
+      .body-input:focus {
+        color: #f6f6f6;
+        overflow-wrap: break-word;
+        background-color: transparent;
+      }
+
+      .body-design {
+        width: 40rem;
+        min-height: 5rem;
+        background-color: transparent;
+        box-shadow: 0 0 5px #a8a8a87d;
+        border: 1px solid #f6f6f6;
+        padding: 2px;
+      }
+
+      .body-icons {
+        height: 2rem;
+      }
+
+      .body-input::placeholder {
+        color: #f6f6f65d;
+      }
+
+      .i-color {
+        color: #a8a8a87d;
+      }
+
+      .i-color:hover {
+        color: #f6f6f6;
+      }
+    </style>
+</head>
+
+<body>
+  <%- include('./partials/nav') %>
+    <div class=" container mt-4 bg-dark col-md-6 py-4 rounded">
+      <h1 class="text-center my-3">Add Blog</h1>
+      <form method="post" action="/user/add-blog" enctype="multipart/form-data">
+        <div class="d-flex flex-column align-items-center">
+          <div class="mb-3">
+            <label for="CoverImage" class="form-label">Cover Image</label>
+            <input class="form-control file-input" type="file" id="CoverImage" name="CoverImage">
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control input-filed" id="title" name="title" aria-describedby="title"
+              placeholder="Enter Title" required>
+          </div>
+          <div class="mb-3">
+            <label for="body" class="form-label">Body</label>
+            <div class="body-design rounded">
+              <div id="editor" name="textField" contenteditable="true" class="body-input"></div>
+              <div class="text-edits">
+                <button type="button" data-cmd="justifyLeft" class="bg-transparent border-0">
+                  <i class="fa fa-align-left" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="justifyCenter" class="bg-transparent border-0">
+                  <i class="fa fa-align-center" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="justifyRight" class="bg-transparent border-0">
+                  <i class="fa fa-align-right" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="bold" class="bg-transparent border-0">
+                  <i class="fa fa-bold" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="italic" class="bg-transparent border-0">
+                  <i class="fa fa-italic" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="underline" class="bg-transparent border-0">
+                  <i class="fa fa-underline" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="insertOrderedList" class="bg-transparent border-0">
+                  <i class="fa fa-list-ol" aria-hidden="true"></i> </button>
+                <button type="button" data-cmd="insertUnorderedList" class="bg-transparent border-0">
+                  <i class="fa fa-list-ul" aria-hidden="true"></i> </button>    
+              </div>
+            </div>
+
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary" name="action" value="sunmit">Submit</button>
+            <button type="submit" class="btn btn-warning" name="action" value="draft">Save Draft</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+    <script>
+      const buttons = document.querySelectorAll("button");
+      const textField = document.getElementById("editor");
+      for(let i=0; i<buttons.length; i++){
+        buttons[i].addEventListener('click',()=>{
+          let cmd = buttons[i].getAttribute("data-cmd");
+          let ans = document.execCommand(cmd, false, null)
+          console.log(ans)
+        })
+      }
+
+
+      document.querySelector('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+
+        const editorContent = document.getElementById('editor').innerHTML;
+        formData.append('body', editorContent);
+        const actionType = event.submitter.value; 
+  formData.append('action', actionType);
+
+        fetch('/user/add-blog', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Success:', data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+        window.location.assign("http://localhost:4000/");
+      });
+
+    </script>
+
+
+    <%- include('./partials/script') %>
+</body>
+
+</html>

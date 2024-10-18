@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<%- include('./partials/head') %>
+		<title>Blog Card</title>
+		<style>
+			.card-styles {
+				border: none;
+				width: 40rem;
+				min-height: 100vh;
+			}
+
+			.comment-card {
+				border: none;
+				width: 30rem;
+				min-height: 50vh;
+				max-height: 87vh;
+
+			}
+
+			.display {
+				display: flex;
+				justify-content: center;
+			}
+
+			.card-img {
+				text-align: center;
+			}
+
+			.card-img img {
+				max-width: 95%;
+				height: auto;
+				max-height: 30rem;
+			}
+
+			.card-text {
+				color: aliceblue;
+				/* overflow-x: auto; */
+				white-space: pre-wrap;
+				/* word-wrap: break-word; */
+				font-family: Arial, Helvetica, sans-serif;
+			}
+
+			.comments {
+				overflow-y: scroll;
+			}
+
+			.comments::-webkit-scrollbar {
+				display: none;
+			}
+
+			.comment-person {
+				color: #6d6d6d;
+				font-size: 0.8rem;
+			}
+
+			.input-filed {
+				width: 90%;
+			}
+
+			.btn {
+				min-width: 0;
+				height: 2rem;
+				font-size: 0.8em;
+				margin-block: 0;
+				margin-right: 1rem;
+				background-color: #11181b;
+				color: #f6f6f6;
+			}
+
+			.btn:hover {
+				background-color: #11181b;
+				color: #f6f6f6;
+			}
+
+			hr {
+				margin-block: 0.5rem;
+			}
+
+			.hide-color {
+				color: #6d6d6d;
+			}
+
+			.like-count {
+				font-size: xx-small;
+			}
+		</style>
+</head>
+
+<body>
+	<%- include('./partials/nav') %>
+		<% if (locals.blogs) { %>
+			<div class="display">
+				<div class="card card-styles py-3 bg-dark rounded-0">
+
+					<div class="card-img">
+						<img src="/<%= blogs.coverImage %>" class="image" alt="Blog Cover">
+					</div>
+					<div class="card-body">
+						<h5 class="card-title">
+							<%= blogs.title %>
+						</h5>
+						<div class="card-text" id="card-text"></div>
+					</div>
+					<div class="comment-person pe-3 d-flex justify-content-end">
+						<a href="/profile/<%= blogs.createdBy.fullname %>">Created By: <%= blogs.createdBy.fullname %>
+						</a>
+					</div>
+				</div>
+				<div class="card comment-card m-3 p-3 bg-dark rounded">
+					<h1 class="text-light">comments (<%= comments.length %>)</h1>
+					<% if (locals.user) { %>
+						<form method="post" action="/comment/<%= blogs._id %>">
+							<div class="mb-3">
+								<input type="text" class="form-control input-filed" id="comment" name="comment"
+									aria-describedby="comment" placeholder="Enter Your comment..." required>
+							</div>
+							<button type="submit" class="btn">Comment</button>
+						</form>
+						<% } %>
+							<% if (locals.comments) { %>
+								<div class="mt-3 text-light comments">
+									<% comments.forEach((comments,index)=> { %>
+										<div class="comment-person">
+											@<%= comments.createdBy.fullname %>:
+										</div>
+										<div class="d-flex justify-content-between">
+											<% if (comments.flag) { %>
+												<div class="ps-2">
+													<%= comments.comment %>
+												</div>
+												<% } else { %>
+													<div class="ps-2 hide-color">
+														user remove the comment.
+													</div>
+													<% } %>
+														<div class="ps-3 d-flex">
+															<% if (user) { %>
+																<div class="ps-2">
+																	<script>
+																		console.log("hii <%= user._id %>")
+																		console.log("by <%= likes[comments._id].userIds.map(id => id.toString()).includes(user._id.toString()) %>")
+																	</script>
+																	<i class="fa <% if (likes[comments._id] && likes[comments._id].userIds.map(id => id.toString()).includes(user._id.toString())) { %>fa-thumbs-up<% } else { %>fa-thumbs-o-up<% } %>" 
+																			role="button" 
+																			id="comment-like<%= index %>" 
+																			onclick="chnageLike('<%= comments._id %>', '<%= index %>')"></i>
+															
+																	<p class="like-count text-center">
+																			<% if (likes[comments._id]) { %>
+																					<%= likes[comments._id].likeCount %> 
+																			<% } else { %>
+																					0 
+																			<% } %>
+																	</p>
+															</div>
+															
+																
+																<% } %>
+																	<% if (user._id==blogs.createdBy._id) { %>
+																		<div class="ps-3">
+																			<img
+																				src="<% if (comments.flag) { %>/images/show.png<% } else { %>/images/hide.png<% } %>"
+																				alt="<% if (comments.flag) { %>show<% } else { %>hide<% } %>" width="15"
+																				height="15" role="button" id="comment-hide<%= index %>"
+																				onclick="changeSeen('<%= comments._id %>','<%= index %>')">
+																		</div>
+																		<% } %>
+
+														</div>
+										</div>
+										<hr>
+										<% }) %>
+								</div>
+								<% } %>
+				</div>
+
+
+			</div>
+			</div>
+	
+
+<script>
+	let card_text = document.getElementById("card-text");
+	card_text.innerHTML = `<%- blogs.body %>`
+</script>
+
+
+			<% } %>
+
+				<script>
+					function changeSeen(id, i) {
+						let button = document.getElementById(`comment-hide${i}`);
+						let flag;
+						if (button.alt === "show") {
+							button.src = "/images/hide.png"
+							button.alt = "hide"
+							flag = false
+
+						} else {
+							button.src = "/images/show.png"
+							button.alt = "show"
+							flag = true
+						}
+						fetch("/user/comment/display", {
+							method: "PUT",
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ id, flag })
+						})
+
+						window.location.reload();
+					}
+
+					function chnageLike(id, i) {
+						let likes = document.getElementById(`comment-like${i}`);
+						let likeAdd;
+						if (likes.classList.contains("fa-thumbs-o-up")) {
+							likes.classList.add("fa-thumbs-up");
+							likes.classList.remove("fa-thumbs-o-up");
+							likeAdd = true;
+						} else {
+							likes.classList.add("fa-thumbs-o-up");
+							likes.classList.remove("fa-thumbs-up");
+							likeAdd = false;
+						}
+						console.log(likeAdd)
+						fetch("/user/comment/likes", {
+							method: "POST",
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ id, likeAdd })
+						})
+
+						window.location.reload();
+					}
+				</script>
+
+				<%- include('./partials/script') %>
+
+</body>
+
+</html>

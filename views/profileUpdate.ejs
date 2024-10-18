@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head') %>
+        <title>Blogger Profile</title>
+        <style>
+    
+
+            .user-imge {
+                max-width: 12rem;
+                max-height: 15rem;
+            }
+
+            .input-filed, .file-input {
+                width: 25rem;
+            }
+        </style>
+</head>
+
+<body>
+    <%- include('./partials/nav') %>
+
+        <% if (locals.user) { %>
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-2">
+                       <img class="user-imge" src="/<%= user.profileImage %>"
+                                alt="Profile Image" />
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row ">
+                            <div class="col-md-1 text-end p-0">
+                                Name:
+                            </div>
+                            <div class="col-md-3">
+                                
+                                    <%= user.fullname %>
+                               
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-1 text-end p-0">
+                            email:
+                            </div>
+                            <div class="col-md-2">
+                                
+                                    <%= user.email %>
+                              
+                            </div>
+                        </div>
+                        <hr>
+                        
+                    </div>
+                </div>
+            </div>
+            
+                <% if (locals.image) { %>
+                    <div class=" container bg-dark mt-4 col-md-4 rounded py-4 password-form" id="password-form">
+                    <form method="post" action="/user/profile/picture" enctype="multipart/form-data">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="mb-3">
+                                <label for="CoverImage" class="form-label">Cover Image</label>
+                                <input class="form-control file-input" type="file" id="CoverImage" name="CoverImage">
+                                <input type="hidden" name="id" value="<%= user._id %>">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                    <% } if(locals.name) { %>
+                        <div class=" container bg-dark mt-4 col-md-4 rounded py-4 password-form" id="password-form">
+                        <form method="post" action="/user/profile/name">
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="mb-3">
+                                    <label for="fullname" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control input-filed" id="fullname" name="fullname"
+                                        aria-describedby="fullname" placeholder="Enter Name...">
+                                    <input type="hidden" name="id" value="<%= user._id %>">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                        <% } if(locals.email) { %>
+                            <div class=" container bg-dark mt-4 col-md-4 rounded py-4 password-form" id="password-form">
+                            <form method="post" action="/user/profile/email">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control input-filed" id="email" name="email"
+                                            aria-describedby="email" placeholder="Enter Email...">
+                                        <input type="hidden" name="id" value="<%= user._id %>">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                            <% } %>
+                            
+                                <% } %>
+        
+            <%- include('./partials/script') %>
+
+</body>
+
+</html>
