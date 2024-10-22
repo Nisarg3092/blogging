@@ -71,7 +71,6 @@
 
             .user-image {
                 max-height: 8rem;
-
             }
         </style>
 </head>
@@ -85,7 +84,11 @@
                     <div class="user-img bg-dark rounded-circle d-flex justify-content-center">
                         <img src="/<%= blogWriter.profileImage   %>" class="user-image rounded-circle" alt="...">
                     </div>
-                    <p class="mt-1 text-center"><%= blogWriter.fullname %>
+                    <p class="mt-1 mb-0 text-center"><%= blogWriter.fullname %>
+                    </p>
+                    <p class="mt-1 mb-0 fs-6 text-center text-secondary">Followers : <%= followers.length %>
+                    </p>
+                    <p class="fs-6 text-center text-secondary">Following : <%= following.length %>
                     </p>
                 </div>
 
@@ -102,7 +105,7 @@
                                             <%= blogs.title %>
                                         </h5>
                                         <p class="card-text">
-                                            <%= blogs.body %>
+                                            <%= blogs.summary %>
                                         </p>
                                         <a href="/readblog/<%= blogs._id %>" class="btn btn-primary">Read</a>
                                     </div>

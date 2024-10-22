@@ -35,6 +35,11 @@
 										aria-describedby="title" value="<%= blogs.title %>" required>
 								</div>
 								<div class="mb-3">
+									<label for="summary" class="form-label">Summary</label>
+									<input type="text" class="form-control input-filed" id="summary" name="summary"
+										aria-describedby="summary" value="<%= blogs.summary %>" required>
+								</div>
+								<div class="mb-3">
 									<label for="body" class="form-label">Body</label>
 									<div class="body-design rounded">
 										<div id="editor<%= i %>" contenteditable="true" class="body-input"><%-
@@ -72,24 +77,34 @@
 										</div>
 									</div>
 								</div>
-								<button type="submit" class="btn btn-warning" name="action"
-									value="delete" onclick="submitForm('<%= i %>','delete')">Delete</button>
-								<button type="submit" class="btn btn-success" name="action"
-									value="publish" onclick="submitForm('<%= i %>','publish')">Publish</button>
+								<% if (user.isMember) { %>
+									<div class="form-check my-3">
+										<input class="form-check-input" type="checkbox" value="true" id="defaultCheck1"
+											name="member_only" <% if(blog.member === true){ %>checked <% } %>>
+											<label class="form-check-label" for="defaultCheck1">
+												Member Only
+											</label>
+									</div>
+									<% } %>
+
+										<button type="submit" class="btn btn-warning" name="action" value="delete"
+											onclick="submitForm('<%= i %>','delete')">Delete</button>
+										<button type="submit" class="btn btn-success" name="action" value="publish"
+											onclick="submitForm('<%= i %>','publish')">Publish</button>
 							</div>
 						</div>
 					</form>
+					
 					<% } }) %>
+
 			</div>
 			<% } else { %>
 				<div class="container mt-3">
 					<span class="fs-5"> No Drafts!</span>
 				</div>
 				<% } %>
-
 					<script>
-
-						function submitForm(index,action) {
+						function submitForm(index, action) {
 							const form = document.getElementById(`updateForm${index}`);
 							const formData = new FormData(form);
 
@@ -110,6 +125,7 @@
 									console.error('Error:', error);
 								});
 						}
+						
 
 						document.querySelectorAll('.text-edits button').forEach(button => {
 							button.addEventListener('click', function () {
@@ -120,6 +136,7 @@
 							});
 						});
 					</script>
+				
 
 					<%- include('./partials/script') %>
 </body>

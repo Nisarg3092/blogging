@@ -9,6 +9,10 @@ const blogSchema = new Schema({
         type: String,
         required: true
     },
+    summary:{
+        type: String,
+        required: true
+    },
     coverImage:{
         type: String,
         default: "images/download.jpeg"
@@ -25,6 +29,10 @@ const blogSchema = new Schema({
     flag:{
         type: Boolean,
         default: true
+    },
+    member:{
+        type: Boolean,
+        default: false
     }
 },{timestamps: true});
 

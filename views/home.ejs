@@ -57,7 +57,7 @@
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 2;
-                color: aliceblue;
+                color: #f6f6f65d;
             }
 
             .btn {
@@ -83,16 +83,12 @@
                                 <h5 class="card-title">
                                     <%= blogs.title %>
                                 </h5>
-                                <div class="card-text" id="card-text<%= i %>">
-                                 
+                                <div class="card-text" id="card-text">
+                                    <%- blogs.summary %>
                                 </div>
                                 <a href="/readblog/<%= blogs._id %>" class="btn btn-primary">Read</a>
                             </div>
                         </div>
-                        <script>
-                         card_text = document.getElementById("card-text<%= i %>");
-                            card_text.innerHTML = `<%- blogs.body %>`;
-                        </script>
                         <% }) %>
                 </div>
             </div>

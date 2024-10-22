@@ -11,12 +11,31 @@
 				min-height: 100vh;
 			}
 
+			.user-img {
+				width: 2.3rem;
+				border: 1px solid white;
+				max-height: 2.3rem;
+			}
+
+			.user-image {
+				max-height: 2rem;
+			}
+
+			.createdBy {
+				font-size: 0.8rem;
+				color: #6d6d6d;
+			}
+
 			.comment-card {
 				border: none;
 				width: 30rem;
 				min-height: 50vh;
 				max-height: 87vh;
+			}
 
+			.card-summary {
+				font-size: 1em;
+				color: #6d6d6d;
 			}
 
 			.display {
@@ -28,19 +47,36 @@
 				text-align: center;
 			}
 
-			.card-img img {
+			.image {
 				max-width: 95%;
 				height: auto;
-				max-height: 30rem;
+				max-height: 20rem;
 			}
 
 			.card-text {
 				color: aliceblue;
-				/* overflow-x: auto; */
 				white-space: pre-wrap;
-				/* word-wrap: break-word; */
 				font-family: Arial, Helvetica, sans-serif;
 			}
+
+			.card-text-color {
+				position: relative;
+				overflow: hidden;
+				max-height: 7em;
+			}
+
+
+			.card-text-color::after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: 4em;
+				background: linear-gradient(to bottom, #11181b00 0%, #212529 100%);
+				pointer-events: none;
+			}
+
 
 			.comments {
 				overflow-y: scroll;
@@ -76,6 +112,7 @@
 
 			hr {
 				margin-block: 0.5rem;
+				color: #e0e0e0;
 			}
 
 			.hide-color {
@@ -93,21 +130,62 @@
 		<% if (locals.blogs) { %>
 			<div class="display">
 				<div class="card card-styles py-3 bg-dark rounded-0">
-
-					<div class="card-img">
-						<img src="/<%= blogs.coverImage %>" class="image" alt="Blog Cover">
-					</div>
 					<div class="card-body">
-						<h5 class="card-title">
+						<div class="comment-person d-flex my-3">
+							<div class="user-img bg-dark rounded-circle d-flex justify-content-center">
+								<img src="/<%= blogs.createdBy.profileImage %>" class="user-image rounded-circle"
+									alt="...">
+							</div>
+							<div class="ms-3">
+								<div class="d-flex fs-6">
+									<a href="/profile/<%= blogs.createdBy.fullname %>">
+										<%= blogs.createdBy.fullname %>
+									</a>
+									<script>
+									
+									</script>
+									<% if (locals.user && (blogs.createdBy._id.toString() !== locals.user._id.toString())) { %><span
+											class="text-secondary">・</span><span
+											class="<% if (follow === true) { %>text-secondary<% } else { %> text-success<% } %>"
+											role="button" onclick="follow()" id="follow">
+											<% if (follow===true) { %>
+												Following
+												<% } else { %> Follow <% } %>
+										</span>
+										<% } %>
+								</div>
+								<p class="createdBy m-0">
+									<%= date %>
+								</p>
+							</div>
+							</a>
+						</div>
+						<hr class="mb-4">
+						<h2 class="text-light m-0">
 							<%= blogs.title %>
-						</h5>
-						<div class="card-text" id="card-text"></div>
-					</div>
-					<div class="comment-person pe-3 d-flex justify-content-end">
-						<a href="/profile/<%= blogs.createdBy.fullname %>">Created By: <%= blogs.createdBy.fullname %>
-						</a>
+						</h2>
+						<div class="card-summary mb-2">
+							<%= blogs.summary %>
+						</div>
+						<div class="card-img mb-2">
+							<img src="/<%= blogs.coverImage %>" class="image" alt="Blog Cover">
+						</div>
+						<div class="card-text <% if (!locals.user || ( !user.isMember && blogs.member)) { %>card-text-color<% } %>" id="card-text">
+						
+						</div>
+						
+						<div class="text-center mt-4">
+							<% if (locals.user) {  if (!locals.user.isMember && blogs.member){ %>
+								<p>Read this story from <%= blogs.createdBy.fullname %> ⎯ Want to read full blog Become Member. </p>
+								<button class="btn btn-primary" onclick="beMember()">Buy Premium</button>
+								<% } } else { %>
+									<p>Read this story from <%= blogs.createdBy.fullname %> ⎯ Want to read full blog then Sign in. </p>
+								<a href="/signin"><button class="btn btn-primary">Sign In</button></a> 
+									<% } %>
+						</div>
 					</div>
 				</div>
+
 				<div class="card comment-card m-3 p-3 bg-dark rounded">
 					<h1 class="text-light">comments (<%= comments.length %>)</h1>
 					<% if (locals.user) { %>
@@ -138,32 +216,29 @@
 														<div class="ps-3 d-flex">
 															<% if (user) { %>
 																<div class="ps-2">
-																	<script>
-																		console.log("hii <%= user._id %>")
-																		console.log("by <%= likes[comments._id].userIds.map(id => id.toString()).includes(user._id.toString()) %>")
-																	</script>
-																	<i class="fa <% if (likes[comments._id] && likes[comments._id].userIds.map(id => id.toString()).includes(user._id.toString())) { %>fa-thumbs-up<% } else { %>fa-thumbs-o-up<% } %>" 
-																			role="button" 
-																			id="comment-like<%= index %>" 
-																			onclick="chnageLike('<%= comments._id %>', '<%= index %>')"></i>
-															
+																	
+																	<i class="fa <% if (likes[comments._id] && likes[comments._id].userIds.map(id => id.toString()).includes(user._id.toString())) { %>fa-thumbs-up<% } else { %>fa-thumbs-o-up<% } %>"
+																		role="button" id="comment-like<%= index %>"
+																		onclick="chnageLike('<%= comments._id %>', '<%= index %>')"></i>
+
 																	<p class="like-count text-center">
-																			<% if (likes[comments._id]) { %>
-																					<%= likes[comments._id].likeCount %> 
-																			<% } else { %>
-																					0 
-																			<% } %>
+																		<% if (likes[comments._id]) { %>
+																			<%= likes[comments._id].likeCount %>
+																				<% } else { %>
+																					0
+																					<% } %>
 																	</p>
-															</div>
-															
-																
+																</div>
+
+
 																<% } %>
-																	<% if (user._id==blogs.createdBy._id) { %>
+																	<% if (locals.user && user._id==blogs.createdBy._id)
+																		{ %>
 																		<div class="ps-3">
-																			<img
-																				src="<% if (comments.flag) { %>/images/show.png<% } else { %>/images/hide.png<% } %>"
-																				alt="<% if (comments.flag) { %>show<% } else { %>hide<% } %>" width="15"
-																				height="15" role="button" id="comment-hide<%= index %>"
+																			<img src="<% if (comments.flag) { %>/images/show.png<% } else { %>/images/hide.png<% } %>"
+																				alt="<% if (comments.flag) { %>show<% } else { %>hide<% } %>"
+																				width="15" height="15" role="button"
+																				id="comment-hide<%= index %>"
 																				onclick="changeSeen('<%= comments._id %>','<%= index %>')">
 																		</div>
 																		<% } %>
@@ -179,17 +254,55 @@
 
 			</div>
 			</div>
-	
 
-<script>
-	let card_text = document.getElementById("card-text");
-	card_text.innerHTML = `<%- blogs.body %>`
-</script>
+
+			<script>
+				let card_text = document.getElementById("card-text");
+				card_text.innerHTML = `<%- blogs.body %>`
+			</script>
 
 
 			<% } %>
 
 				<script>
+			
+					function beMember(){
+						fetch("/user/member", {
+							method: "POST",
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ isMember: true })
+						});
+						window.location.reload()
+					}
+
+					function follow() {
+						let follow = document.getElementById('follow');
+						let set;
+						if (follow.innerText === "Follow") {
+							follow.classList.remove("text-success")
+							follow.classList.add("text-secondary")
+							follow.innerText = "Following"
+							set = true;
+						}
+						else {
+							follow.classList.remove("text-secondary")
+							follow.classList.add("text-success")
+							follow.innerText = "Follow"
+							set = false;
+						}
+
+						fetch("/follow", {
+							method: "POST",
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({ set, following: '<%= blogs.createdBy._id %>' })
+						});
+						window.location.reload();
+					}
+
 					function changeSeen(id, i) {
 						let button = document.getElementById(`comment-hide${i}`);
 						let flag;

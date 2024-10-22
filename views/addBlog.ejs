@@ -52,7 +52,7 @@
 
 <body>
   <%- include('./partials/nav') %>
-    <div class=" container mt-4 bg-dark col-md-6 py-4 rounded">
+    <div class="container mt-4 bg-dark col-md-6 py-4 rounded">
       <h1 class="text-center my-3">Add Blog</h1>
       <form method="post" action="/user/add-blog" enctype="multipart/form-data">
         <div class="d-flex flex-column align-items-center">
@@ -64,6 +64,11 @@
             <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control input-filed" id="title" name="title" aria-describedby="title"
               placeholder="Enter Title" required>
+          </div>
+          <div class="mb-3">
+            <label for="summary" class="form-label">Summary</label>
+            <input type="text" class="form-control input-filed" id="summary" name="summary" aria-describedby="summary"
+              placeholder="Enter summary" required>
           </div>
           <div class="mb-3">
             <label for="body" class="form-label">Body</label>
@@ -86,20 +91,30 @@
                   <i class="fa fa-list-ol" aria-hidden="true"></i> </button>
                 <button type="button" data-cmd="insertUnorderedList" class="bg-transparent border-0">
                   <i class="fa fa-list-ul" aria-hidden="true"></i> </button>    
-              </div>
+             
             </div>
-
           </div>
-          <div>
-            <button type="submit" class="btn btn-primary" name="action" value="sunmit">Submit</button>
+          <% if (user.isMember) { %>
+            <div class="form-check my-3">
+              <input class="form-check-input" type="checkbox" value="true" id="defaultCheck1" name="member_only">
+              <label class="form-check-label" for="defaultCheck1">
+                Member Only
+              </label>
+            </div>
+          <% } %>
+          
+
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary" name="action" value="submit">Submit</button>
             <button type="submit" class="btn btn-warning" name="action" value="draft">Save Draft</button>
           </div>
         </div>
       </form>
     </div>
-
+  </div>
 
     <script>
+      let blogss = [];
       const buttons = document.querySelectorAll("button");
       const textField = document.getElementById("editor");
       for(let i=0; i<buttons.length; i++){
@@ -109,6 +124,15 @@
           console.log(ans)
         })
       }
+
+      function setData(){
+      
+        if(textField.innerText){
+          blogss = textField.innerHTML
+          console.log(blogss)
+        }
+      }
+      
 
 
       document.querySelector('form').addEventListener('submit', function (event) {

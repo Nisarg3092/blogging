@@ -1,6 +1,7 @@
 const { model, Schema } = require("mongoose");
 const { createHmac, randomBytes } = require("crypto");
-const { createAccessToken, createRefreshToken } = require("../services/auth")
+const { createAccessToken, createRefreshToken } = require("../services/auth");
+const { type } = require("os");
 
 const userSchema = new Schema(
   {
@@ -36,6 +37,10 @@ const userSchema = new Schema(
     },
     refreshToken:{
       type: String
+    },
+    isMember:{
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }

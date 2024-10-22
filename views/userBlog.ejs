@@ -34,10 +34,14 @@
 											aria-describedby="title" value="<%= blog.title %>" required>
 									</div>
 									<div class="mb-3">
+										<label for="summary" class="form-label">Summary</label>
+										<input type="text" class="form-control file-input" id="summary" name="summary"
+											aria-describedby="summary" value="<%= blog.summary %>" required>
+									</div>
+									<div class="mb-3">
 										<label for="body" class="form-label">Body</label>
 										<div class="body-design rounded">
-											<div id="editor<%= i %>" contenteditable="true" class="body-input"><%-
-													blog.body %></div>
+											<div id="editor<%= i %>" contenteditable="true" class="body-input"><%- blog.body %></div>
 											<div class="text-edits">
 												<button type="button" data-cmd="justifyLeft"
 													class="bg-transparent border-0">
@@ -72,6 +76,16 @@
 											</div>
 										</div>
 									</div>
+										<% if (user.isMember) { %>
+								<div class="form-check my-3">
+									<input class="form-check-input" type="checkbox" value="true" id="defaultCheck1" name="member_only" <% if (blog.member === true) { %>
+									   checked
+										<% } %> >
+									<label class="form-check-label" for="defaultCheck1">
+									  Member Only
+									</label>
+								  </div>
+								<% } %>
 									<div class="mb-3">
 										<div class="form-check form-switch">
 											<input class="form-check-input" type="checkbox" role="switch" id="flag"

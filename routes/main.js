@@ -4,6 +4,7 @@ const Blog = require("../model/blog");
 const Comment = require("../model/comment");
 const CommentLike = require("../model/commentLike");
 const OTP = require("../model/otp");
+const Follow = require("../model/follow");
 const router = Router();
 const { sendOtpMail, generateOTP } = require("../utils/nodemailer")
 const { authHome } = require("../middlewares/auth");
@@ -27,16 +28,39 @@ router.get("/", authHome, async (req, res) => {
   });
 });
 
+router.get("/search", authHome, async (req, res) => {
+  const { title } = req.query;
+  const allBlog = await Blog.find({
+    draft: false,
+    flag: true,
+    title: new RegExp(title, 'i')  // 'i' makes the search case-insensitive
+  });
+  res.render("home", {
+    user: req.user,
+    blogs: allBlog,
+  });
+});
+
 router.get("/readblog/:id", authHome, async (req, res) => {
   const id = req.params.id;
+  let follow = false;
+  let user;
+  if(req.user){
+    user = await User.findById(req.user._id);
+  }
   const blog = await Blog.findById(id).populate("createdBy");
   const comment = await Comment.find({ blogId: id }).populate("createdBy");
-
+  if(req.user){
+    follow = Boolean(await Follow.findOne({
+      following: blog.createdBy._id,
+      follower: req.user._id
+    }));
+  } 
+  let date = blog.createdAt.toDateString();
   let commentLike = {};
 
   for (const com of comment) {
     const datas = await CommentLike.find({ commentId: com._id });
-
     commentLike[com._id] = {
       userIds: [],
       likeCount: 0 
@@ -47,10 +71,12 @@ router.get("/readblog/:id", authHome, async (req, res) => {
     }
   }
  res.render("readBlog", {
-    user: req.user,
+    user: user,
     blogs: blog,
     comments: comment,
-    likes: commentLike
+    likes: commentLike,
+    date: date,
+    follow
   });
 });
 
@@ -208,15 +234,37 @@ router.post("/comment/:id", async (req,res) =>{
 });
 
 router.get('/profile/:uname', authHome, async (req,res) =>{
-  const blogerName = req.params.uname
-
+  const blogerName = req.params.uname;
   const blogUser = await User.findOne({fullname:blogerName});
+  const followers = await Follow.find({following: blogUser._id});
+  const following = await Follow.find({follower: blogUser._id});
   const blog = await Blog.find({createdBy:blogUser._id});
   res.render("bloggerProfile", {
     user: req.user,
     blogWriter: blogUser,
     blogs: blog,
+    followers,
+    following
   });
 });
+
+router.post("/follow", async (req,res) =>{
+  const { set, following } = req.body;
+  console.log(req.body);
+  if(set){
+    const a = await Follow.create({
+      follower: req.user._id,
+      following
+    })
+    console.log(a);
+  }
+  else{
+    let b = await Follow.findOneAndDelete({
+      follower: req.user._id,
+      following
+    })
+    console.log(b);
+  }
+})
 
 module.exports = router;
